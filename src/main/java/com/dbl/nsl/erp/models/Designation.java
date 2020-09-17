@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -19,21 +21,20 @@ public class Designation {
 	public Designation() {
 		
 	}
-	public Designation(Long designationId, String designationName) {
-		this.designationId = designationId;
+	
+	public Designation(String designationName) {
 		this.designationName = designationName;	
 	}
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "designation_id")
 	private Long designationId;
 	
 	@Column(name = "designation_name")
 	private String designationName;
 	
-	@JsonBackReference
     @ManyToMany(mappedBy = "designations", fetch = FetchType.LAZY)
-//    private Set<Employee> employees = new HashSet<>();
 	private List<Employee> employees;
 	
 	

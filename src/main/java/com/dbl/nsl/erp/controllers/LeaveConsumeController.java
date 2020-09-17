@@ -32,6 +32,8 @@ public class LeaveConsumeController {
 	@PostMapping("/leaveconsume/save")
     @PreAuthorize("hasRole('ADMIN')")
     public LeaveConsume employeeLeaveConsume(@RequestBody LeaveConsume leaveConsume) {
+		System.out.println(leaveConsume.getStartDate());
+		System.out.println(leaveConsume.getIsAccepted());
 		return leaveConsumeRepository.save(leaveConsume);
     }
 	

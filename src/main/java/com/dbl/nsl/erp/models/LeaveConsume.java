@@ -27,7 +27,7 @@ public class LeaveConsume {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
 	@Column(name = "start_date")
@@ -48,6 +48,13 @@ public class LeaveConsume {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
+    
+    public Long getId() {
+    	return id;
+    }
+    public void setId(Long id) {
+    	this.id = id;
+    }
 	
 	public String getStartDate() {
 		return startDate;

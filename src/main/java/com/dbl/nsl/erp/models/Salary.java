@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,13 +29,13 @@ public class Salary {
 		
 	}
 	
-	public Salary(Long salaryId, Long totalSalary, Long basicSalary) {
-		this.salaryId = salaryId;
+	public Salary(Long totalSalary, Long basicSalary) {
 		this.totalSalary = totalSalary;
 		this.basicSalary = basicSalary;
 	}
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "salary_id")
 	private Long salaryId;
 	

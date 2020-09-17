@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ import com.dbl.nsl.erp.repository.eRepository;
 
 import io.jsonwebtoken.lang.Arrays;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/test")
 public class eController {
@@ -48,7 +50,7 @@ public class eController {
 	@Autowired
 	DesignationRepository designationRepository;
 	
-    @PostMapping("/employee/save")
+    @PostMapping("/employees")
     @PreAuthorize("hasRole('ADMIN')")
     public Employee createEmployee(@RequestBody Employee employee) {
     	
@@ -83,21 +85,22 @@ public class eController {
         return erepository.save(employee);
     }   
     
-    @GetMapping("/employee/find/{id}")
+    @GetMapping("/employees/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Optional<Employee>> getEmployeeByEmployeeNumber(@PathVariable(value = "id") Long employeeNumber)
+    public ResponseEntity<Employee> getEmployeeByEmployeeNumber(@PathVariable(value = "id") Long employeeNumber)
         throws ResourceNotFoundException {
-        Optional<Employee> employee = erepository.findById(employeeNumber);
+    	Employee employee = erepository.findById(employeeNumber)
+    			.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
         return ResponseEntity.ok().body(employee);
     }
     
-	@GetMapping("employee/findall")
+	@GetMapping("/employees")
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<Employee> getAllEmployee(){
 		return this.erepository.findAll();
 	}
 	
-    @PutMapping("/employee/edit/{id}")
+    @PutMapping("/employees/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeNumber,
          @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
@@ -105,25 +108,23 @@ public class eController {
         .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
 
 //        employee.setLastName(employeeDetails.getLastName());
-//        employee.setFirstName(employeeDetails.getFirstName());
+        employee.setFirstName(employeeDetails.getFirstName());
 //        employee.setFatherName(employeeDetails.getFatherName());
 //        employee.setMotherName(employeeDetails.getMotherName());
 //        employee.setDoB(employeeDetails.getDoB());
 //        employee.setGender(employeeDetails.getGender());
 //        employee.setNidNumber(employeeDetails.getNidNumber());
 //        employee.setNationality(employeeDetails.getNationality());
-//        employee.setEmail(employeeDetails.getEmail());
+        employee.setEmail(employeeDetails.getEmail());
 //        employee.setMobileNumber(employeeDetails.getMobileNumber());
 //        employee.setEmergencyContact(employeeDetails.getEmergencyContact());
+        employee.setActive(employeeDetails.getActive());
         employee.setPermanentAddress(employeeDetails.getPermanentAddress());
         employee.setPresentAddress(employeeDetails.getPresentAddress());
         employee.setDepartment(employeeDetails.getDepartments());
         employee.setDesignation(employeeDetails.getDesignation());
         employee.setSsc(employeeDetails.getSsc());
-        employee.setLeave(employeeDetails.getLeave());
-       
-//        employee.setDesignation(employeeDetails.getDesignation());
-        
+//        employee.setLeave(employeeDetails.getLeave());
         
         final Employee updatedEmployee = erepository.save(employee);
         return ResponseEntity.ok(updatedEmployee);

@@ -5,8 +5,11 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -17,13 +20,13 @@ public class Leave {
 	public Leave() {
 		
 	}
-	public Leave(Long leaveId, String leaveType, Long leaveDays) {
-		this.leaveId = leaveId;
+	public Leave(String leaveType, Long leaveDays) {
 		this.leaveType = leaveType;
 		this.leaveDays = leaveDays;
 	}
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "leave_id")
 	private Long leaveId;
 	

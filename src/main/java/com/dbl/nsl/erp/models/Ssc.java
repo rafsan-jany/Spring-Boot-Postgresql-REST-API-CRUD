@@ -26,7 +26,6 @@ public class Ssc {
 	private Long id;
 	private String schoolName;
 	
-//    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
@@ -51,6 +50,4 @@ public class Ssc {
     public void setEmployee(Employee employee) {
     	this.employee = employee;
     }
-	
-
 }

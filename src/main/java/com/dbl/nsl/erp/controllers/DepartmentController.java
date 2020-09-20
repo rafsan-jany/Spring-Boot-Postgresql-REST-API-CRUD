@@ -33,7 +33,7 @@ import com.dbl.nsl.erp.repository.DepartmnetRepository;
 import com.dbl.nsl.erp.repository.eRepository;
 
 @RestController
-@RequestMapping("/api/test")
+//@RequestMapping("/api/test")
 public class DepartmentController {
 
 	@Autowired
@@ -42,21 +42,17 @@ public class DepartmentController {
 	@Autowired
 	eRepository employeeRepository;
 
-//	@PostMapping("/departments")
-//	@PreAuthorize("hasRole('ADMIN')")
-//	public Department employeeDepartment(@RequestBody Department department) {
-//		return departmentRepository.save(department);
-//	}
-	
-	@PostMapping("/departments")
+	@PostMapping("/department/add")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<MessageResponse> employeeDepartment(@RequestBody Department department) {
+		if (departmentRepository.existsByName(department.getName())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Department already exists"));
+		}
 		departmentRepository.save(department);
-//		throw new ResourceAlreadyExists("Resource already exists in DB.");
-		return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("ok"));
+		return ResponseEntity.ok(new MessageResponse("Department registered successfully"));
 	}
 
-	@GetMapping("/departments/{id}")
+	@GetMapping("/department/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Department> getDepartmentById(@PathVariable(value = "id") Long departmentId)
 			throws ResourceNotFoundException{
@@ -65,27 +61,27 @@ public class DepartmentController {
 		return ResponseEntity.ok().body(department);
 	}
 
-	@GetMapping("/departments")
+	@GetMapping("/department/all")
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<Department> getAllDepartment()throws ForbiddenException {
 		return this.departmentRepository.findAll();
 	}
 
-	@PutMapping("/departments/{id}")
+	@PutMapping("/department/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Department> updateDepartment(@PathVariable(value = "id") Long departmentId,
 			@RequestBody Department departmentDetails) throws ResourceNotFoundException, ForbiddenException {
 		Department department = departmentRepository.findById(departmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
-		department.setDeparmentId(departmentDetails.getDepartmentId());
-		department.setDepartmentName(departmentDetails.getDepartmentName());
+		department.setName(departmentDetails.getName());
+		department.setDescription(departmentDetails.getDescription());
 //        department.setDepartmentLeadName(departmentDetails.getDepartmentLeadName());
 		final Department updatedDepartment = departmentRepository.save(department);
 		return ResponseEntity.ok(updatedDepartment);
 	}
 
-	@DeleteMapping("/department/delete/{id}")
+	@DeleteMapping("/department/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public Map<String, Boolean> deleteDepartment(@PathVariable(value = "id") Long departmentId)
 			throws ResourceNotFoundException {
@@ -109,7 +105,7 @@ public class DepartmentController {
 		
 		for (Department department : departments) {
 			DepartmentResponse departmentResponse = new DepartmentResponse();
-			departmentResponse.setDepartmentName(department.getDepartmentName());
+			departmentResponse.setDepartmentName(department.getName());
 			Set<Long> queryEmployee = employeeRepository.findByDepartmenId(department.getDepartmentId());
 			long totalEmployee = queryEmployee.size();
 			departmentResponse.setTotalEmployee(totalEmployee);

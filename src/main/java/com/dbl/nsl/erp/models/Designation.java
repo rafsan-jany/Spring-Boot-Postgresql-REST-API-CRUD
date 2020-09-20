@@ -22,8 +22,9 @@ public class Designation {
 		
 	}
 	
-	public Designation(String designationName) {
-		this.designationName = designationName;	
+	public Designation(String name, String description) {
+		this.name = name;
+		this.description = description;
 	}
 	
 	@Id
@@ -31,8 +32,11 @@ public class Designation {
 	@Column(name = "designation_id")
 	private Long designationId;
 	
-	@Column(name = "designation_name")
-	private String designationName;
+	@Column(name = "name")
+	private String name;
+	
+	@Column(name = "description")
+	private String description;
 	
     @ManyToMany(mappedBy = "designations", fetch = FetchType.LAZY)
 	private List<Employee> employees;
@@ -44,11 +48,17 @@ public class Designation {
 	public void setDesignationId(Long designationId) {
 		this.designationId = designationId;
 	}
-	public String getDesignationName() {
-		return designationName;
+	public String getName() {
+		return name;
 	}
-	public void setDesignationName(String designationName) {
-		this.designationName = designationName;
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	@JsonBackReference
 	public List<Employee> getEmployees() {

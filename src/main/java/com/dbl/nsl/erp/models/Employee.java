@@ -159,6 +159,14 @@ public class Employee {
 					@JoinColumn(name = "group_id", referencedColumnName = "group_id", nullable = false, updatable = false) })
 //    private Set<Designation> designations = new HashSet<>();
 	private List<Group> groups;
+	
+//	@JsonManagedReference
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST) // owning side
+	@JoinTable(name = "employees_companies", joinColumns = {
+			@JoinColumn(name = "employee_id", referencedColumnName = "employee_id", nullable = false, updatable = false) }, inverseJoinColumns = {
+					@JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false, updatable = false) })
+//    private Set<Designation> designations = new HashSet<>();
+	private List<Company> companies;
 
 //	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST) // owning side
@@ -327,6 +335,13 @@ public class Employee {
 	}
 	public void setGroup(List<Group> groups) {
 		this.groups = groups;
+	}
+	
+	public List<Company> getCompany() {
+		return companies;
+	}
+	public void setCompany(List<Company> companies) {
+		this.companies = companies;
 	}
 
 	public List<Designation> getDesignation() {

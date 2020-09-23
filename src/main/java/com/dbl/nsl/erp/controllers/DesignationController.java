@@ -42,7 +42,7 @@ public class DesignationController {
     @PostMapping("/designation/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> employeeDesignation(@RequestBody Designation designation) {
-		if (designationRepository.existsByName(designation.getName())) {
+		if (designationRepository.existsByDesignationName(designation.getDesignationName())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Designation already exists"));
 		}
 		designationRepository.save(designation);
@@ -71,7 +71,7 @@ public class DesignationController {
          Designation designation = designationRepository.findById(designationId)
         .orElseThrow(() -> new ResourceNotFoundException("Designation not found"));
 
-        designation.setName(designationDetails.getName());
+        designation.setDesignationName(designationDetails.getDesignationName());
         designation.setDescription(designationDetails.getDescription());
         final Designation updatedDesignation = designationRepository.save(designation);
         return ResponseEntity.ok(updatedDesignation);
@@ -100,7 +100,7 @@ public class DesignationController {
 		
 		for (Designation designation : designations) {
 			DesignationResponse designationResponse = new DesignationResponse();
-			designationResponse.setDesignationName(designation.getName());
+			designationResponse.setDesignationName(designation.getDesignationName());
 			Set<Long> queryEmployee = employeeRepository.findByDesignationId(designation.getDesignationId());
 			long totalEmployee = queryEmployee.size();
 			designationResponse.setTotalEmployee(totalEmployee);

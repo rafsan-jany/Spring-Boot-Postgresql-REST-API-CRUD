@@ -22,8 +22,8 @@ public class Designation {
 		
 	}
 	
-	public Designation(String name, String description) {
-		this.name = name;
+	public Designation(String designationName, String description) {
+		this.designationName = designationName;
 		this.description = description;
 	}
 	
@@ -32,8 +32,8 @@ public class Designation {
 	@Column(name = "designation_id")
 	private Long designationId;
 	
-	@Column(name = "name")
-	private String name;
+	@Column(name = "designation_name")
+	private String designationName;
 	
 	@Column(name = "description")
 	private String description;
@@ -48,11 +48,11 @@ public class Designation {
 	public void setDesignationId(Long designationId) {
 		this.designationId = designationId;
 	}
-	public String getName() {
-		return name;
+	public String getDesignationName() {
+		return designationName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setDesignationName(String designationName) {
+		this.designationName = designationName;
 	}
 	public String getDescription() {
 		return description;

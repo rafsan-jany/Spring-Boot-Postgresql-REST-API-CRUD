@@ -17,7 +17,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 	Set<String> findGroupNameByEmployeeId(Long employeeId);
 
 	@Query( value = "select groups.group_id from groups join employees_groups on groups.group_id = employees_groups.group_id join employees on employees_groups.employee_id = ?1", nativeQuery = true)
-	Set<Long> findGroupIdByEmployeeName(Long employeeId);
+	Set<Long> findGroupIdByEmployeeId(Long employeeId);
 
 	@Query( value = "select groups.group_name from groups where group_id = ?1", nativeQuery = true)
 	String findGroupNameByGroupId(Long groupId);

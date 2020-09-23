@@ -45,10 +45,10 @@ public class Salary {
 	@Column(name = "basic_salary")
 	private Long basicSalary;
 	
-//	@JsonManagedReference
-    @OneToMany(mappedBy = "salary", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    private List<Employee> employee;
+////	@JsonManagedReference
+//    @OneToMany(mappedBy = "salary", fetch = FetchType.LAZY,
+//            cascade = CascadeType.ALL)
+//    private List<Employee> employee;
 	
 	
 	public Long getSalaryId() {
@@ -69,11 +69,11 @@ public class Salary {
 	public void setBasicSalary(Long basicSalary) {
 		this.basicSalary = basicSalary;
 	}
-	@JsonManagedReference
-	public List<Employee> getEmployee() {
-		return employee;
-	}
-	public void setEmployee(List<Employee> employee) {
-		this.employee = employee;
-	}
+//	@JsonManagedReference
+//	public List<Employee> getEmployee() {
+//		return employee;
+//	}
+//	public void setEmployee(List<Employee> employee) {
+//		this.employee = employee;
+//	}
 }

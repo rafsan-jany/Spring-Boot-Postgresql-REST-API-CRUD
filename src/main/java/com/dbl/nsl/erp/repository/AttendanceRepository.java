@@ -21,7 +21,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
 	Long countByStatus(String present);
 
-	Long countByStatusAndDateAndGroupId(String status, Date date, Long groupId);
+	Long countByStatusAndDateAndCompanyId(String status, Date date, Long companyId);
 
 	@Query( value = "select attendances.employee_id from attendances where group_name = ?1 and date = ?2", nativeQuery = true)
 	List<Long> findEmployeeIdByGroupNameAndDate(String groupName, Date date);
@@ -29,4 +29,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 	Optional<Attendance> findByEmployeeIdAndDate(Long employeeId, Date date);
 
 	Optional<Attendance> findByEmployeeId(Long employeeId);
+
+	List<Attendance> findByCompanyNameAndDate(String companyName, Date date);
+
+	List<Attendance> findByCompanyIdAndDate(Long companyId, Date date);
+
+	List<Attendance> findByDepartmentNameAndDate(String departmentName, Date date);
 }

@@ -31,13 +31,14 @@ import com.dbl.nsl.erp.models.Employee;
 import com.dbl.nsl.erp.models.Group;
 import com.dbl.nsl.erp.payload.response.GroupHrResponse;
 import com.dbl.nsl.erp.repository.AttendanceRepository;
+import com.dbl.nsl.erp.repository.CompanyRepository;
 import com.dbl.nsl.erp.repository.DepartmnetRepository;
 import com.dbl.nsl.erp.repository.DesignationRepository;
 import com.dbl.nsl.erp.repository.GroupRepository;
 import com.dbl.nsl.erp.repository.eRepository;
 
 @RestController
-@RequestMapping("/api/test")
+//@RequestMapping("/api/test")
 public class AttendanceController {
 
 	@Autowired
@@ -48,6 +49,9 @@ public class AttendanceController {
 
 	@Autowired
 	GroupRepository groupRepository;
+
+	@Autowired
+	CompanyRepository companyRepository;
 
 	@Autowired
 	DepartmnetRepository departmentRepository;
@@ -85,19 +89,22 @@ public class AttendanceController {
 
 		Set<String> employeeDesignationSet = designationRepository.findDesignationByEmployeeId(Id);
 		String employeeDesignation = String.join(", ", employeeDesignationSet);
+		System.out.println(employeeDesignation);
 		Set<String> employeeDepartmentSet = departmentRepository.findDepartmentByEmployeeId(Id);
 		String employeeDepartment = String.join(", ", employeeDepartmentSet);
-		Set<String> employeeGroupSet = groupRepository.findGroupNameByEmployeeId(Id);
-		String employeeGroup = String.join(",", employeeGroupSet);
-		Set<Long> employeeGroupIdSet = groupRepository.findGroupIdByEmployeeName(Id);
-		for (Long eid : employeeGroupIdSet) {
-			attendance.setGroupId(eid);
+		Set<String> employeeCompanySet = companyRepository.findNameByEmployeeId(Id);
+		String employeeCompany = String.join(",", employeeCompanySet);
+
+		Set<Long> employeeCompanyIdSet = companyRepository.findCompanyIdByEmployeeId(Id);
+
+		for (Long eid : employeeCompanyIdSet) {
+			attendance.setCompanyId(eid);
 		}
 
 		attendance.setEmployeeName(employeeName);
 		attendance.setDesignationName(employeeDesignation);
 		attendance.setDepartmentName(employeeDepartment);
-		attendance.setGroupName(employeeGroup);
+		attendance.setCompanyName(employeeCompany);
 
 		return attendance;
 
@@ -121,7 +128,7 @@ public class AttendanceController {
 		throw new RuntimeException("employee found");
 	}
 
-	@GetMapping("/attendances/employee/{id}")
+	@GetMapping("/attendance/employee/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public List<Attendance> getAllByDateBetween(@PathVariable(value = "id") Long employeeNo,
 			@RequestParam("startdate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startdate,
@@ -130,31 +137,98 @@ public class AttendanceController {
 		return attendanceRepository.findByEmployeeIdAndDateBetween(employeeNo, startdate, enddate);
 	}
 
-	@GetMapping("/attendances/admin")
+//	@GetMapping("/attendances/admin")
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public List<Attendance> getAllByDate(@RequestParam("group") String groupName,
+//			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+//		return attendanceRepository.findByGroupNameAndDate(groupName, date);
+//	}
+
+//	@GetMapping("/attendances/admin")
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public List<Attendance> getAllByDate(@RequestParam("company") String companyName,
+//			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+//		return attendanceRepository.findByCompanyNameAndDate(companyName, date);
+//	}
+
+	@GetMapping("/attendance/company/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<Attendance> getAllByDate(@RequestParam("group") String groupName,
+	public List<Attendance> getAllByCompanyAndDate(@PathVariable(value = "id") Long companyId,
 			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
-		return attendanceRepository.findByGroupNameAndDate(groupName, date);
+		return attendanceRepository.findByCompanyIdAndDate(companyId, date);
 	}
+
+	@GetMapping("/attendance/department/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<Attendance> getAllByDepartmentAndDate(@PathVariable(value = "id") Long departmentId,
+			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) throws ResourceNotFoundException {
+		Department department = departmentRepository.findById(departmentId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		return attendanceRepository.findByDepartmentNameAndDate(department.getDepartmentName(), date);
+	}
+
+//	@GetMapping("/attendances/group-admin")
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public List<GroupHrResponse> getAllGroupByDate(
+//			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+//
+//		List<Long> groupIds = groupRepository.findGroupId();
+//		
+////		List<Long> companyIds = companyRepository.findCompanyId();
+//
+//		List<GroupHrResponse> groupHrResponseList = new ArrayList<GroupHrResponse>();
+//
+//		for (Long groupId : groupIds) {
+//			Long presentEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("present", date, groupId);
+//			Long lateEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("late", date, groupId);
+//			Long absentEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("absent", date, groupId);
+////			Long sickEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("sick", date, groupId);
+////			Long casualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("casual", date, groupId);
+////			Long annualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("annual", date, groupId);
+//			Long leaveEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("leave", date, groupId);
+//			String groupName = groupRepository.findGroupNameByGroupId(groupId);
+//			
+//			
+//
+//			Long totalEmp = presentEmpCount + lateEmpCount + absentEmpCount;
+//
+//			GroupHrResponse groupHrResponse = new GroupHrResponse();
+//			groupHrResponse.setTotalEmployee(totalEmp);
+//			groupHrResponse.setTotalPresentEmployee(presentEmpCount);
+//			groupHrResponse.setTotalLateEmployee(lateEmpCount);
+//			groupHrResponse.setTotalAbsentEmployee(absentEmpCount);
+//			groupHrResponse.setGroupName(groupName);
+//			groupHrResponse.setDate(date);
+////			groupHrResponse.setTotalSickLeaveEmployee(sickEmpCount);
+////			groupHrResponse.setTotalCasualLeaveEmployee(casualEmpCount);
+////			groupHrResponse.setTotalAnnualLeaveEmployee(annualEmpCount);
+//			groupHrResponse.setTotalLeaveEmployee(leaveEmpCount);
+//			groupHrResponseList.add(groupHrResponse);
+//		}
+//		return groupHrResponseList;
+//	}
 
 	@GetMapping("/attendances/group-admin")
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<GroupHrResponse> getAllGroupByDate(
 			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
 
-		List<Long> groupIds = groupRepository.findGroupId();
+//		List<Long> groupIds = groupRepository.findGroupId();
+
+		List<Long> companyIds = companyRepository.findCompanyId();
 
 		List<GroupHrResponse> groupHrResponseList = new ArrayList<GroupHrResponse>();
 
-		for (Long groupId : groupIds) {
-			Long presentEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("present", date, groupId);
-			Long lateEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("late", date, groupId);
-			Long absentEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("absent", date, groupId);
-//			Long sickEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("sick", date, groupId);
-//			Long casualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("casual", date, groupId);
-//			Long annualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("annual", date, groupId);
-			Long leaveEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("leave", date, groupId);
-			String groupName = groupRepository.findGroupNameByGroupId(groupId);
+		for (Long companyId : companyIds) {
+			Long presentEmpCount = attendanceRepository.countByStatusAndDateAndCompanyId("present", date, companyId);
+			Long lateEmpCount = attendanceRepository.countByStatusAndDateAndCompanyId("late", date, companyId);
+			Long absentEmpCount = attendanceRepository.countByStatusAndDateAndCompanyId("absent", date, companyId);
+//			Long sickEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("sick", date, companyId);
+//			Long casualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("casual", date, companyId);
+//			Long annualEmpCount = attendanceRepository.countByStatusAndDateAndGroupId("annual", date, companyId);
+			Long leaveEmpCount = attendanceRepository.countByStatusAndDateAndCompanyId("leave", date, companyId);
+			String companyName = companyRepository.findCompanyNameByCompanyId(companyId);
 
 			Long totalEmp = presentEmpCount + lateEmpCount + absentEmpCount;
 
@@ -163,7 +237,7 @@ public class AttendanceController {
 			groupHrResponse.setTotalPresentEmployee(presentEmpCount);
 			groupHrResponse.setTotalLateEmployee(lateEmpCount);
 			groupHrResponse.setTotalAbsentEmployee(absentEmpCount);
-			groupHrResponse.setGroupName(groupName);
+			groupHrResponse.setGroupName(companyName);
 			groupHrResponse.setDate(date);
 //			groupHrResponse.setTotalSickLeaveEmployee(sickEmpCount);
 //			groupHrResponse.setTotalCasualLeaveEmployee(casualEmpCount);
@@ -187,7 +261,6 @@ public class AttendanceController {
 
 			attendance = attendanceProperties(employeeId, attendance); // add properties name, department, designation,
 																		// group, group id
-
 			attendance.setDate(date);
 			attendance.setEmployeeId(employeeId);
 			attendance.setInTime(null);
@@ -219,6 +292,29 @@ public class AttendanceController {
 			return ResponseEntity.ok(attendanceResponse);
 		}
 		throw new RuntimeException("employee not found");
+	}
+
+	@PutMapping("/attendance/employee/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Attendance> attendanceResponse(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Attendance attendanceDetails) throws ResourceNotFoundException, ParseException {
+		Optional<Attendance> attendance = attendanceRepository.findByEmployeeIdAndDate(employeeId,
+				attendanceDetails.getDate());
+
+		if (attendance.isPresent()) {
+			Attendance updatedAttendance = attendance.get();
+
+			updatedAttendance.setInTime(attendanceDetails.getInTime());
+			updatedAttendance.setOutTime(attendanceDetails.getOutTime());
+
+			String status = attendanceStatus(employeeId, updatedAttendance.getInTime());
+
+			updatedAttendance.setStatus(status);
+
+			final Attendance attendanceResponse = attendanceRepository.save(updatedAttendance);
+			return ResponseEntity.ok(attendanceResponse);
+		}
+		throw new ResourceNotFoundException("Employee not found");
 	}
 
 	@GetMapping("/attendance/findall")

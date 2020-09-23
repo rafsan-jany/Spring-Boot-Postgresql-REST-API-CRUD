@@ -37,8 +37,7 @@ public class PermanentAddress {
     
     public PermanentAddress() {
     }
-	public PermanentAddress(String houseNo, String roadNo, Long postalCode, String policeStation,
-		String districtName, String countryName) {
+	public PermanentAddress(String houseNo) {
 	this.houseNo = houseNo;
 	}
     

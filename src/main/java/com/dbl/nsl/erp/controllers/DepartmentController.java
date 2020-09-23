@@ -45,7 +45,7 @@ public class DepartmentController {
 	@PostMapping("/department/add")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<MessageResponse> employeeDepartment(@RequestBody Department department) {
-		if (departmentRepository.existsByName(department.getName())) {
+		if (departmentRepository.existsByDepartmentName(department.getDepartmentName())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Department already exists"));
 		}
 		departmentRepository.save(department);
@@ -74,7 +74,7 @@ public class DepartmentController {
 		Department department = departmentRepository.findById(departmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
-		department.setName(departmentDetails.getName());
+		department.setDepartmentName(departmentDetails.getDepartmentName());
 		department.setDescription(departmentDetails.getDescription());
 //        department.setDepartmentLeadName(departmentDetails.getDepartmentLeadName());
 		final Department updatedDepartment = departmentRepository.save(department);
@@ -105,7 +105,7 @@ public class DepartmentController {
 		
 		for (Department department : departments) {
 			DepartmentResponse departmentResponse = new DepartmentResponse();
-			departmentResponse.setDepartmentName(department.getName());
+			departmentResponse.setDepartmentName(department.getDepartmentName());
 			Set<Long> queryEmployee = employeeRepository.findByDepartmenId(department.getDepartmentId());
 			long totalEmployee = queryEmployee.size();
 			departmentResponse.setTotalEmployee(totalEmployee);

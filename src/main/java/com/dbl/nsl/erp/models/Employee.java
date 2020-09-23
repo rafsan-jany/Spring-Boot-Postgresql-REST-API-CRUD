@@ -37,14 +37,15 @@ public class Employee {
 	public Employee() {
 	}
 
-	public Employee(Long employeeId, String firstName, String email, boolean active, String employeeInTime) {
+	public Employee(Long employeeId, String firstName, String email, boolean active, String employeeInTime,
+			String permanent, String present) {
 		this.employeeId = employeeId;
 		this.firstName = firstName;
 		this.email = email;
 		this.active = active;
 		this.employeeInTime = employeeInTime;
-//		this.groupName = groupName;
-
+		this.permanent = permanent;
+		this.present = present;
 	}
 
 //	public Employee(Long employeeId, String firstName, String lastName, String email, String fatherName,
@@ -88,10 +89,13 @@ public class Employee {
 
 	@Column(name = "in_time")
 	private String employeeInTime;
+	
+	@Column(name = "permanent")
+	private String permanent;
+	
+	@Column(name = "present")
+	private String present;
 
-//	@Column(name = "group_name")
-//	private String groupName;
-//	
 //	@Column(name = "father_name")
 //	private String fatherName;
 //	
@@ -132,10 +136,6 @@ public class Employee {
 	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // inverse side
 	private PresentAddress presentAddress;
 
-	@JsonManagedReference
-	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // inverse side
-	private Ssc ssc;
-
 //	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "employees_departments", joinColumns = {
@@ -175,15 +175,31 @@ public class Employee {
 					@JoinColumn(name = "leave_id", referencedColumnName = "leave_id", nullable = false, updatable = false) })
 //    private Set<Designation> designations = new HashSet<>();
 	private List<Leave> leaves;
-
-//  @JsonBackReference
-	@ManyToOne(fetch = FetchType.LAZY, optional = false) // owning side
-	@JoinColumn(name = "salary_id", nullable = false)
-	private Salary salary;
+//
+////  @JsonBackReference
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false) // owning side
+//	@JoinColumn(name = "salary_id", nullable = false)
+//	private Salary salary;
 
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<LeaveConsume> leaveConsume;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
+			cascade = CascadeType.ALL)
+	private List<Experience> experience;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
+			cascade = CascadeType.ALL)
+	private List<Education> education;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
+			cascade = CascadeType.ALL)
+	private List<Contact> contact;
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
+			cascade = CascadeType.ALL)
+	private List<Certification> certification;
 
 	public Long getEmployeeId() {
 		return employeeId;
@@ -284,14 +300,22 @@ public class Employee {
 	public void setEmployeeInTime(String employeeInTime) {
 		this.employeeInTime = employeeInTime;
 	}
+	
+	public String getPermanent() {
+		return permanent;
+	}
 
-//	public String getGroupName() {
-//		return groupName;
-//	}
-//
-//	public void setGroupName(String groupName) {
-//		this.groupName = groupName;
-//	}
+	public void setPermanent(String permanent) {
+		this.permanent = permanent;
+	}
+
+	public String getPresent() {
+		return present;
+	}
+
+	public void setPresent(String present) {
+		this.present = present;
+	}
 
 //	public Long getpolicyId() {
 //		return policyId;
@@ -306,13 +330,21 @@ public class Employee {
 	public void setPermanentAddress(PermanentAddress permanentAddress) {
 		this.permanentAddress = permanentAddress;
 	}
-
-	public Ssc getSsc() {
-		return ssc;
+	
+	public List<Contact> getContact() {
+		return contact;
 	}
 
-	public void setSsc(Ssc ssc) {
-		this.ssc = ssc;
+	public void setContact(List<Contact> contact) {
+		this.contact = contact;
+	}
+	
+	public List<Certification> getCertification() {
+		return certification;
+	}
+
+	public void setCertification(List<Certification> certification) {
+		this.certification = certification;
 	}
 
 	public PresentAddress getPresentAddress() {
@@ -322,6 +354,7 @@ public class Employee {
 	public void setPresentAddress(PresentAddress presentAddress) {
 		this.presentAddress = presentAddress;
 	}
+	
 
 	public List<Department> getDepartments() {
 		return departments;
@@ -360,14 +393,15 @@ public class Employee {
 		this.leaves = leaves;
 	}
 
-	@JsonBackReference
-	public Salary getSalary() {
-		return salary;
-	}
-
-	public void setSalary(Salary salary) {
-		this.salary = salary;
-	}
+//	@JsonBackReference
+//	public Salary getSalary() {
+//		return salary;
+//	}
+//
+//	public void setSalary(Salary salary) {
+//		this.salary = salary;
+//	}
+	
 //	@JsonManagedReference
 	public List<LeaveConsume> getLeaveConsume() {
 		return leaveConsume;
@@ -375,6 +409,22 @@ public class Employee {
 
 	public void setLeaveConsume(List<LeaveConsume> leaveConsume) {
 		this.leaveConsume = leaveConsume;
+
+	}
+	public List<Experience> getExperience() {
+		return experience;
+	}
+
+	public void setExperience(List<Experience> experience) {
+		this.experience = experience;
+
+	}
+	public List<Education> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<Education> education) {
+		this.education = education;
 
 	}
 }

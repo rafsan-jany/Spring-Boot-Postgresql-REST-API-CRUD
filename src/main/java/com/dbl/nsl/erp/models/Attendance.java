@@ -56,12 +56,19 @@ public class Attendance {
 	
 	@Column(name = "group_id")
 	private Long groupId;
+	
+	@Column(name = "company_name")
+	private String companyName;
+	
+	@Column(name = "company_id")
+	private Long companyId;
 
 	public Attendance() {
 
 	}
 	public Attendance(Date date, Long employeeId, String employeeName, String departmentName,
-			String designationName, Time inTime, Time outTime, String status, String groupName, Long groupId) {
+			String designationName, Time inTime, Time outTime, String status, String groupName, Long groupId, 
+			String companyName, Long companyId) {
 		this.date = date;
 		this.employeeId = employeeId;
 		this.employeeName = employeeName;
@@ -72,6 +79,8 @@ public class Attendance {
 		this.status = status;
 		this.groupName = groupName;
 		this.groupId = groupId;
+		this.companyName = companyName;
+		this.companyId = companyId;
 	}
 	public Date getDate() {
 		return date;
@@ -132,5 +141,18 @@ public class Attendance {
 	}
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+	
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public Long getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 }

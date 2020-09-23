@@ -26,8 +26,8 @@ public class Department {
 	public Department() {
 	}
 
-	public Department(String name, String description) {
-		this.name = name;
+	public Department(String departmentName, String description) {
+		this.departmentName = departmentName;
 		this.description = description;
 	}
 
@@ -36,8 +36,8 @@ public class Department {
 	@Column(name = "department_id")
 	private Long departmentId;
 	
-	@Column(name = "name")
-	private String name;
+	@Column(name = "department_name")
+	private String departmentName;
 	
 	@Column(name = "description")
 	private String description;
@@ -53,12 +53,12 @@ public class Department {
 		this.departmentId = departmentId;
 	}
 
-	public String getName() {
-		return name;
+	public String getDepartmentName() {
+		return departmentName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 	
 	public String getDescription() {

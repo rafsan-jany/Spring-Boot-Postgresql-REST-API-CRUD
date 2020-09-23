@@ -20,14 +20,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dbl.nsl.erp.exception.ResourceNotFoundException;
+import com.dbl.nsl.erp.models.Certification;
+import com.dbl.nsl.erp.models.Company;
+import com.dbl.nsl.erp.models.Contact;
 import com.dbl.nsl.erp.models.Department;
 import com.dbl.nsl.erp.models.Designation;
+import com.dbl.nsl.erp.models.Education;
 import com.dbl.nsl.erp.models.Employee;
+import com.dbl.nsl.erp.models.Experience;
+import com.dbl.nsl.erp.models.Location;
 import com.dbl.nsl.erp.models.PermanentAddress;
 import com.dbl.nsl.erp.models.PresentAddress;
 import com.dbl.nsl.erp.models.Salary;
+import com.dbl.nsl.erp.repository.CertificationRepository;
+import com.dbl.nsl.erp.repository.ContactRepository;
 import com.dbl.nsl.erp.repository.DepartmnetRepository;
 import com.dbl.nsl.erp.repository.DesignationRepository;
+import com.dbl.nsl.erp.repository.EducationRepository;
+import com.dbl.nsl.erp.repository.ExperienceRepository;
+import com.dbl.nsl.erp.repository.PermanentAddressRepository;
 import com.dbl.nsl.erp.repository.SalaryRepository;
 import com.dbl.nsl.erp.repository.eRepository;
 
@@ -35,25 +46,40 @@ import io.jsonwebtoken.lang.Arrays;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/test")
+//@RequestMapping("/api/test")
 public class eController {
-	
+
 	@Autowired
 	eRepository erepository;
-	
+
 	@Autowired
 	DepartmnetRepository departmentRepository;
-	
+
 	@Autowired
 	SalaryRepository salaryRepository;
-	
+
 	@Autowired
 	DesignationRepository designationRepository;
+
+	@Autowired
+	ExperienceRepository experienceRepository;
+
+	@Autowired
+	EducationRepository educationRepository;
+
+	@Autowired
+	PermanentAddressRepository permanentAddressRepository;
+
+	@Autowired
+	ContactRepository contactRepository;
 	
-    @PostMapping("/employees")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Employee createEmployee(@RequestBody Employee employee) {
-    	
+	@Autowired 
+	CertificationRepository certificationRepository;
+
+	@PostMapping("/employee/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Employee createEmployee(@RequestBody Employee employee) {
+
 //    	Employee employee2 = new Employee(7l, "a", "b", "c", "d", "e", "f", "g", "h",
 //    			3l, "j", "k", 4l, "i" );
 //    	
@@ -82,82 +108,379 @@ public class eController {
 //    	employee2.getDesignation().add(designation1);
 //    	
 //        return erepository.save(employee2);
-        return erepository.save(employee);
-    }   
-    
-    @GetMapping("/employees/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Employee> getEmployeeByEmployeeNumber(@PathVariable(value = "id") Long employeeNumber)
-        throws ResourceNotFoundException {
-    	Employee employee = erepository.findById(employeeNumber)
-    			.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
-        return ResponseEntity.ok().body(employee);
-    }
-    
+		return erepository.save(employee);
+	}
+
+	@GetMapping("/employee/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<Employee> getEmployee(@PathVariable(value = "id") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+		return ResponseEntity.ok().body(employee);
+	}
+
 	@GetMapping("/employees")
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<Employee> getAllEmployee(){
+	public List<Employee> getAllEmployee() {
 		return this.erepository.findAll();
 	}
-	
-    @PutMapping("/employees/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeNumber,
-         @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
-        Employee employee = erepository.findById(employeeNumber)
-        .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
+
+	@PutMapping("/employees/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeNumber,
+			@RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeNumber).orElseThrow(
+				() -> new ResourceNotFoundException("Employee not found"));
 
 //        employee.setLastName(employeeDetails.getLastName());
-        employee.setFirstName(employeeDetails.getFirstName());
+		employee.setFirstName(employeeDetails.getFirstName());
 //        employee.setFatherName(employeeDetails.getFatherName());
 //        employee.setMotherName(employeeDetails.getMotherName());
 //        employee.setDoB(employeeDetails.getDoB());
 //        employee.setGender(employeeDetails.getGender());
 //        employee.setNidNumber(employeeDetails.getNidNumber());
 //        employee.setNationality(employeeDetails.getNationality());
-        employee.setEmail(employeeDetails.getEmail());
+		employee.setEmail(employeeDetails.getEmail());
 //        employee.setMobileNumber(employeeDetails.getMobileNumber());
 //        employee.setEmergencyContact(employeeDetails.getEmergencyContact());
-        employee.setActive(employeeDetails.getActive());
-        employee.setPermanentAddress(employeeDetails.getPermanentAddress());
-        employee.setPresentAddress(employeeDetails.getPresentAddress());
-        employee.setDepartment(employeeDetails.getDepartments());
-        employee.setDesignation(employeeDetails.getDesignation());
-        employee.setSsc(employeeDetails.getSsc());
+		employee.setActive(employeeDetails.getActive());
+		employee.setPermanentAddress(employeeDetails.getPermanentAddress());
+		employee.setPresentAddress(employeeDetails.getPresentAddress());
+		employee.setDepartment(employeeDetails.getDepartments());
+		employee.setDesignation(employeeDetails.getDesignation());
 //        employee.setLeave(employeeDetails.getLeave());
-        
-        final Employee updatedEmployee = erepository.save(employee);
-        return ResponseEntity.ok(updatedEmployee);
-    }
-    
-    @DeleteMapping("/employee/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long employeeNumber)
-         throws ResourceNotFoundException {
-        Employee employee = erepository.findById(employeeNumber)
-       .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
 
-        erepository.delete(employee);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
-    }
-    
-    @GetMapping("/employee/email/{email}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<List<String>> getEmployeeByEmail(@PathVariable(value = "email") String email)
-        throws ResourceNotFoundException {
-        List <Employee> employee = erepository.findByEmail(email);
-        List<String> name = new ArrayList<String>();
-        employee.stream().forEach((e)->name.add(e.getFirstName()));
+		final Employee updatedEmployee = erepository.save(employee);
+		return ResponseEntity.ok(updatedEmployee);
+	}
+	
+	@PutMapping("/employee/{id}/address/permanent")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<Employee> updateEmployeePermanentAddress(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Employee  employeeDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+		
+		employee.setPermanent(employeeDetails.getPermanent());
+		final Employee updatedEmployee = erepository.save(employee);
+		return ResponseEntity.ok(updatedEmployee);
+	}
+	
+	@GetMapping("/employee/{id}/address/permanent")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<String> getEmployeePermanentAddress(@PathVariable(value = "id") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+		
+		String permanentAddress = employee.getPermanent();
+		return ResponseEntity.ok().body(permanentAddress);
+	}
+	
+	@PutMapping("/employee/{id}/address/present")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<Employee> updateEmployeePresentAddress(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Employee  employeeDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+		
+		employee.setPresent(employeeDetails.getPresent());
+		final Employee updatedEmployee = erepository.save(employee);
+		return ResponseEntity.ok(updatedEmployee);
+	}
+	
+	@GetMapping("/employee/{id}/address/present")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<String> getEmployeePresentAddress(@PathVariable(value = "id") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+		
+		String presentAddress = employee.getPresent();
+		if(presentAddress == null) {
+			return ResponseEntity.ok().body("Address not found");
+		}
+		return ResponseEntity.ok().body(presentAddress);
+	}
+
+	@DeleteMapping("/employee/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long employeeNumber)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeNumber).orElseThrow(
+				() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeNumber));
+
+		erepository.delete(employee);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return response;
+	}
+
+	@GetMapping("/employee/email/{email}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<List<String>> getEmployeeByEmail(@PathVariable(value = "email") String email)
+			throws ResourceNotFoundException {
+		List<Employee> employee = erepository.findByEmail(email);
+		List<String> name = new ArrayList<String>();
+		employee.stream().forEach((e) -> name.add(e.getFirstName()));
 //        	.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + email))
 //        return ResponseEntity.ok().body(employee);
-        return ResponseEntity.ok().body(name);
-    }
-    
+		return ResponseEntity.ok().body(name);
+	}
+
 	@GetMapping("employee/active")
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<Employee> getAllActiveEmployee(){
+	public List<Employee> getAllActiveEmployee() {
 		return this.erepository.findByActiveTrue();
+	}
+
+	@PostMapping("/employee/{id}/experience/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Employee> postExperience(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Experience experienceDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		experienceDetails.setEmployee(employee);
+		experienceRepository.save(experienceDetails);
+		return ResponseEntity.ok().body(employee);
+	}
+
+	@PutMapping("/employee/{id1}/experience/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Experience> updateExperience(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long experienceId, @RequestBody Experience experienceDetails)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Experience experience = experienceRepository.findById(experienceId)
+				.orElseThrow(() -> new ResourceNotFoundException("Experience not found"));
+
+		experience.setCompany(experienceDetails.getCompany());
+		experience.setDesignation(experienceDetails.getDesignation());
+		experience.setDuration(experienceDetails.getDuration());
+
+		final Experience updatedExperience = experienceRepository.save(experience);
+		return ResponseEntity.ok(updatedExperience);
+	}
+
+	@GetMapping("/employee/{id1}/experience/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Experience> getExperience(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long experienceId) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Experience experience = experienceRepository.findById(experienceId)
+				.orElseThrow(() -> new ResourceNotFoundException("Experience not found"));
+		return ResponseEntity.ok().body(experience);
+	}
+
+	@GetMapping("/employee/{id1}/experience/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Experience>> getAllExperience(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long experienceId) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+//		List<Experience> experience = experienceRepository.findByEmployeeId(employeeId);
+		List<Experience> experiences = employee.getExperience();
+		return ResponseEntity.ok().body(experiences);
+	}
+
+	@PostMapping("/employee/{id}/education/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Employee> postEducation(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Education educationDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		educationDetails.setEmployee(employee);
+		educationRepository.save(educationDetails);
+		return ResponseEntity.ok().body(employee);
+	}
+
+	@PutMapping("/employee/{id1}/education/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Education> updateEducation(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long educationId, @RequestBody Education educationDetails)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Education education = educationRepository.findById(educationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Education not found"));
+
+		education.setDegree(educationDetails.getDegree());
+		education.setInstitute(educationDetails.getInstitute());
+		education.setPassingYear(educationDetails.getPassingYear());
+		education.setConcentration(educationDetails.getConcentration());
+
+		final Education updatedEducation = educationRepository.save(education);
+		return ResponseEntity.ok(updatedEducation);
+	}
+
+	@GetMapping("/employee/{id1}/education/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Education> getEducation(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long educationId) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Education education = educationRepository.findById(educationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Education not found"));
+		return ResponseEntity.ok().body(education);
+	}
+
+	@GetMapping("/employee/{id1}/education/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Education>> getAllEducation(@PathVariable(value = "id1") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+//		List<Education> education = educationRepository.findByEmployeeId(employeeId);
+		List<Education> educations = employee.getEducation();
+		return ResponseEntity.ok().body(educations);
+	}
+
+	@PostMapping("/employee/{id}/contact/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Employee> postContact(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Contact contactDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		contactDetails.setEmployee(employee);
+		contactRepository.save(contactDetails);
+		return ResponseEntity.ok().body(employee);
+	}
+
+	@PutMapping("/employee/{id1}/contact/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Contact> updateContact(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long contactId, @RequestBody Contact contactDetails)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Contact contact = contactRepository.findById(contactId)
+				.orElseThrow(() -> new ResourceNotFoundException("Contact not found"));
+
+		contact.setContact(contactDetails.getContact());
+		contact.setEmergencyContact(contactDetails.getEmergencyContact());
+		contact.setRelation(contactDetails.getRelation());
+
+		final Contact updatedContact = contactRepository.save(contact);
+		return ResponseEntity.ok(updatedContact);
+	}
+
+	@GetMapping("/employee/{id1}/contact/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Contact> getContact(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long contactId) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Contact contact = contactRepository.findById(contactId)
+				.orElseThrow(() -> new ResourceNotFoundException("Contact not found"));
+		return ResponseEntity.ok().body(contact);
+	}
+
+	@GetMapping("/employee/{id1}/contact/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Contact>> getAllContact(@PathVariable(value = "id1") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+//		List<Contact> contact = contactRepository.findByEmployeeId(employeeId);
+		List<Contact> contacts = employee.getContact();
+		return ResponseEntity.ok().body(contacts);
+	}
+
+	@GetMapping("/employee/{id1}/contact/emergency")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<String>> getEmergencyContact(@PathVariable(value = "id1") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		List<Contact> contacts = employee.getContact();
+		List<String> emergencyContacts = new ArrayList<String>();
+		for (Contact contact : contacts) {
+			emergencyContacts.add(contact.getEmergencyContact());
+		}
+		return ResponseEntity.ok().body(emergencyContacts);
+	}
+
+	@GetMapping("/employee/{id1}/contact/personal")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<String>> getPersonalContact(@PathVariable(value = "id1") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Personal Contact not found"));
+
+		List<Contact> contacts = employee.getContact();
+		List<String> personalContacts = new ArrayList<String>();
+		for (Contact contact : contacts) {
+			personalContacts.add(contact.getContact());
+		}
+		return ResponseEntity.ok().body(personalContacts);
+	}
+	
+	@PostMapping("/employee/{id}/certification/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Employee> postCertification(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Certification certificationDetails) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		certificationDetails.setEmployee(employee);
+		certificationRepository.save(certificationDetails);
+		return ResponseEntity.ok().body(employee);
+	}
+	
+	@PutMapping("/employee/{id1}/certification/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Certification> updateCertification(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long certificationId, @RequestBody Certification certificationDetails)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Certification certification = certificationRepository.findById(certificationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Certification not found"));
+
+		certification.setTitle(certificationDetails.getTitle());
+		certification.setDuration(certificationDetails.getDuration());
+
+		final Certification updatedCertification = certificationRepository.save(certification);
+		return ResponseEntity.ok(updatedCertification);
+	}
+	
+	@GetMapping("/employee/{id1}/certification/{id2}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Certification> getCertification(@PathVariable(value = "id1") Long employeeId,
+			@PathVariable(value = "id2") Long certificationId) throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		Certification certification = certificationRepository.findById(certificationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Certification not found"));
+		return ResponseEntity.ok().body(certification);
+	}
+
+	@GetMapping("/employee/{id1}/certification/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Certification>> getAllCertification(@PathVariable(value = "id1") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = erepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+		List<Certification> certifications = employee.getCertification();
+		return ResponseEntity.ok().body(certifications);
 	}
 }

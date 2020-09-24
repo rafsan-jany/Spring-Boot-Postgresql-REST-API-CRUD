@@ -46,11 +46,14 @@ public class Employee {
 		this.employeeInTime = employeeInTime;
 		this.permanent = permanent;
 		this.present = present;
+//		this.fatherName = fatherName;
+//		this.motherName = motherName;
+//		this.birthDate = birthDate;
 	}
 
 //	public Employee(Long employeeId, String firstName, String lastName, String email, String fatherName,
-//			String motherName, String mobileNumber, String DoB, String gender, Long nidNumber, String nationality,
-//			String joiningDate, Long policyId, String emergencyContact) {
+//			String motherName, String DoB, String gender, Long nidNumber, String nationality,
+//			String joiningDate) {
 //		this.employeeId = employeeId;
 //		this.firstName = firstName;
 //		this.lastName = lastName;
@@ -63,8 +66,6 @@ public class Employee {
 //		this.gender = gender;
 //		this.nidNumber = nidNumber;
 //		this.nationality = nationality;
-//		this.policyId = policyId;
-//		this.emergencyContact = emergencyContact;
 //	}
 
 //	@Id
@@ -89,25 +90,21 @@ public class Employee {
 
 	@Column(name = "in_time")
 	private String employeeInTime;
-	
+
 	@Column(name = "permanent")
 	private String permanent;
-	
+
 	@Column(name = "present")
 	private String present;
 
-//	@Column(name = "father_name")
-//	private String fatherName;
-//	
-//	@Column(name = "mother_name")
-//	private String motherName;
-//	
-//	@Column(name = "mobile_number")
-//	private String mobileNumber;
+	@Column(name = "father_name")
+	private String fatherName;
 
-//	@JsonFormat(pattern="yyyy-MM-dd")
+	@Column(name = "mother_name")
+	private String motherName;
+
 //	@Column(name = "birth_date")
-//	private String DoB;
+//	private Date birthDate;
 //	
 //	@Column(name = "joining_date")
 //	private String joiningDate;
@@ -120,14 +117,7 @@ public class Employee {
 //	
 //	@Column(name = "nationality")
 //	private String nationality;
-//	
-//	@Column (name = "policy_id")
-//	private Long policyId;
-//	
-//	@Column(name = "emergency_contact")
-//	@JsonProperty("emergency_contact")
-//	private String emergencyContact;
-//	
+
 	@JsonManagedReference
 	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // inverse side
 	private PermanentAddress permanentAddress;
@@ -151,7 +141,7 @@ public class Employee {
 					@JoinColumn(name = "designation_id", referencedColumnName = "designation_id", nullable = false, updatable = false) })
 //    private Set<Designation> designations = new HashSet<>();
 	private List<Designation> designations;
-	
+
 //	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST) // owning side
 	@JoinTable(name = "employees_groups", joinColumns = {
@@ -159,7 +149,7 @@ public class Employee {
 					@JoinColumn(name = "group_id", referencedColumnName = "group_id", nullable = false, updatable = false) })
 //    private Set<Designation> designations = new HashSet<>();
 	private List<Group> groups;
-	
+
 //	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST) // owning side
 	@JoinTable(name = "employees_companies", joinColumns = {
@@ -184,19 +174,19 @@ public class Employee {
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<LeaveConsume> leaveConsume;
-	
+
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<Experience> experience;
-	
+
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<Education> education;
-	
+
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<Contact> contact;
-	
+
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, // inverse side
 			cascade = CascadeType.ALL)
 	private List<Certification> certification;
@@ -217,29 +207,28 @@ public class Employee {
 		this.firstName = firstName;
 	}
 
-//	public String getMotherName() {
-//		return motherName;
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+
+//	public Date getBirthDate() {
+//		return birthDate;
 //	}
-//	public void setMotherName( String motherName) {
-//		this.motherName = motherName;
-//	}
-//	public String getMobileNumber() {
-//		return mobileNumber;
-//	}
-//	public void setMobileNumber( String mobileNumber) {
-//		this.mobileNumber = mobileNumber;
-//	}
-//	public String getEmergencyContact() {
-//		return emergencyContact;
-//	}
-//	public void setEmergencyContact( String emergencyContact) {
-//		this.emergencyContact = emergencyContact;
-//	}
-//	public String getDoB() {
-//		return DoB;
-//	}
-//	public void setDoB(String DoB) {
-//		this.DoB = DoB;
+//
+//	public void setBirthDate(Date birthDate) {
+//		this.birthDate = birthDate;
 //	}
 //	public String getJoiningDate() {
 //		return joiningDate;
@@ -265,12 +254,7 @@ public class Employee {
 //	public void setNationality( String nationality) {
 //		this.nationality = nationality;
 //	}	
-//	public String getFatherName() {
-//		return fatherName;
-//	}
-//	public void setFatherName(String fatherName) {
-//		this.fatherName = fatherName;
-//	}
+
 //	public String getLastName() {
 //		return lastName;
 //	}
@@ -300,7 +284,7 @@ public class Employee {
 	public void setEmployeeInTime(String employeeInTime) {
 		this.employeeInTime = employeeInTime;
 	}
-	
+
 	public String getPermanent() {
 		return permanent;
 	}
@@ -330,7 +314,7 @@ public class Employee {
 	public void setPermanentAddress(PermanentAddress permanentAddress) {
 		this.permanentAddress = permanentAddress;
 	}
-	
+
 	public List<Contact> getContact() {
 		return contact;
 	}
@@ -338,7 +322,7 @@ public class Employee {
 	public void setContact(List<Contact> contact) {
 		this.contact = contact;
 	}
-	
+
 	public List<Certification> getCertification() {
 		return certification;
 	}
@@ -354,11 +338,11 @@ public class Employee {
 	public void setPresentAddress(PresentAddress presentAddress) {
 		this.presentAddress = presentAddress;
 	}
-	
 
 	public List<Department> getDepartments() {
 		return departments;
 	}
+
 	public void setDepartment(List<Department> departments) {
 		this.departments = departments;
 	}
@@ -366,13 +350,15 @@ public class Employee {
 	public List<Group> getGroup() {
 		return groups;
 	}
+
 	public void setGroup(List<Group> groups) {
 		this.groups = groups;
 	}
-	
+
 	public List<Company> getCompany() {
 		return companies;
 	}
+
 	public void setCompany(List<Company> companies) {
 		this.companies = companies;
 	}
@@ -401,7 +387,7 @@ public class Employee {
 //	public void setSalary(Salary salary) {
 //		this.salary = salary;
 //	}
-	
+
 //	@JsonManagedReference
 	public List<LeaveConsume> getLeaveConsume() {
 		return leaveConsume;
@@ -411,6 +397,7 @@ public class Employee {
 		this.leaveConsume = leaveConsume;
 
 	}
+
 	public List<Experience> getExperience() {
 		return experience;
 	}
@@ -419,6 +406,7 @@ public class Employee {
 		this.experience = experience;
 
 	}
+
 	public List<Education> getEducation() {
 		return education;
 	}
